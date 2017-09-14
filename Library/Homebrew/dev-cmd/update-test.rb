@@ -33,14 +33,14 @@ module Homebrew
     elsif date = ARGV.value("before")
       Utils.popen_read("git", "rev-list", "-n1", "--before=#{date}", "origin/master").chomp
     elsif ARGV.include?("--to-tag")
-      tags = Utils.popen_read("git", "tag", "--list", "--sort=-version:refname")
+      tags = Utils.popen_read("git", "tag", "-l", "--sort=-version:refname")
       previous_tag = tags.lines[1]
       previous_tag ||= begin
         if (HOMEBREW_REPOSITORY/".git/shallow").exist?
           safe_system "git", "fetch", "--tags", "--depth=1"
-          tags = Utils.popen_read("git", "tag", "--list", "--sort=-version:refname")
+          tags = Utils.popen_read("git", "tag", "-l", "--sort=-version:refname")
         elsif OS.linux?
-          tags = Utils.popen_read("git tag --list | sort -rV")
+          tags = Utils.popen_read("git tag -l | sort -rV")
         end
         tags.lines[1]
       end
