@@ -76,7 +76,12 @@ fetch() {
     trap - SIGINT
   fi
 
-  if [[ -x "$(which shasum)" ]]
+  # On CentOS, the 'which' command might output the following message when no match found:
+  #   /usr/bin/which: no shasum in ($PATH)
+  # So we need the check the exit code before the stdout content.
+  which shasum > /dev/null
+  SHASUM_FOUND=$?
+  if [[ $SHASUM_FOUND -eq 0 ]]
   then
     sha="$(shasum -a 256 "$CACHED_LOCATION" | cut -d' ' -f1)"
   elif [[ -x "$(which sha256sum)" ]]
